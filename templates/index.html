@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="user-info">
+    {% if user.is_authenticated %}
+        <p>Welcome, <strong>{{ user.email }}</strong>!</p>
+        <a href="{% url 'account_logout' %}" class="btn btn-secondary">Logout</a>
+    {% else %}
+        <p>Please sign in to access the system.</p>
+        {# Using direct URLs for Cognito flows #}
+        <a href="{% url 'amazon_cognito_login' %}" class="btn btn-primary">LogIn || SignUp</a>
+    {% endif %}
+</div>
+{% endblock %}

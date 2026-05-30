@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +28,7 @@ SECRET_KEY = 'django-insecure-2+7#tn9klw=$suhxe0&h2f(6u3_t^u9_7ms@xs4hcy!mxv=1v3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -37,7 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core'
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.amazon_cognito',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -46,6 +54,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -55,7 +64,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -99,6 +108,89 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+SITE_ID = 1
+
+
+def _load_cognito_settings():
+    env_values = {
+        'COGNITO_APP_CLIENT_ID': os.environ.get('COGNITO_APP_CLIENT_ID'),
+        'COGNITO_APP_CLIENT_SECRET': os.environ.get('COGNITO_APP_CLIENT_SECRET'),
+        'COGNITO_DOMAIN': os.environ.get('COGNITO_DOMAIN'),
+    }
+    if all(env_values.values()):
+        return env_values
+    if any(env_values.values()):
+        missing = [key for key, value in env_values.items() if not value]
+        raise ImproperlyConfigured(
+            'Missing Cognito environment variables: ' + ', '.join(missing)
+        )
+
+    try:
+        import boto3
+    except ImportError as exc:
+        raise ImproperlyConfigured(
+            'boto3 is required to load Cognito settings from SSM.'
+        ) from exc
+
+    parameter_names = {
+        'COGNITO_APP_CLIENT_ID': os.environ.get(
+            'COGNITO_APP_CLIENT_ID_SSM',
+            '/maosemacao/cognito/cognito_client_id',
+        ),
+        'COGNITO_APP_CLIENT_SECRET': os.environ.get(
+            'COGNITO_APP_CLIENT_SECRET_SSM',
+            '/maosemacao/cognito/cognito_client_secret',
+        ),
+        'COGNITO_DOMAIN': os.environ.get(
+            'COGNITO_DOMAIN_SSM',
+            '/maosemacao/cognito/cognito_domain',
+        ),
+    }
+    ssm_client = boto3.client('ssm')
+    response = ssm_client.get_parameters(
+        Names=list(parameter_names.values()),
+        WithDecryption=True,
+    )
+    values_by_name = {
+        parameter['Name']: parameter['Value']
+        for parameter in response.get('Parameters', [])
+    }
+    missing_parameters = [
+        name for name in parameter_names.values() if name not in values_by_name
+    ]
+    if missing_parameters:
+        raise ImproperlyConfigured(
+            'Missing SSM parameters: ' + ', '.join(missing_parameters)
+        )
+
+    return {
+        key: values_by_name[parameter_name]
+        for key, parameter_name in parameter_names.items()
+    }
+
+
+_COGNITO_SETTINGS = _load_cognito_settings()
+
+COGNITO_APP_CLIENT_ID = _COGNITO_SETTINGS['COGNITO_APP_CLIENT_ID']
+COGNITO_APP_CLIENT_SECRET = _COGNITO_SETTINGS['COGNITO_APP_CLIENT_SECRET']
+COGNITO_DOMAIN = _COGNITO_SETTINGS['COGNITO_DOMAIN']
+
+SOCIALACCOUNT_PROVIDERS = {
+    'amazon_cognito': {
+        'APP': {
+            'client_id': COGNITO_APP_CLIENT_ID,
+            'secret': COGNITO_APP_CLIENT_SECRET,
+            'key': '',
+        },
+        'DOMAIN': COGNITO_DOMAIN,
+    },
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
@@ -116,3 +208,24 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+# Allauth configuration
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+# Require email verification through Cognito/Allauth
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+
+# Adapters to disable local registration but allow Cognito registration
+ACCOUNT_ADAPTER = 'core.adapters.AccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'core.adapters.SocialAccountAdapter'
+
+# Redirects
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
