@@ -1,0 +1,405 @@
+{
+	"info": {
+		"_postman_id": "0d2f8087-4be7-4c46-953e-b8d9ec76f2df",
+		"name": "Mãos em Ação API",
+		"description": "Coleção de requisições prontas para testar a API REST nativa do projeto Mãos em Ação.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CSRF & Autenticação",
+			"item": [
+				{
+					"name": "0. Inicializar CSRF Token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/api/csrf/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"csrf",
+								""
+							]
+						},
+						"description": "Carrega o cookie csrf para habilitar chamadas POST/PUT/PATCH no Postman."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Perfil",
+			"item": [
+				{
+					"name": "Obter Perfil",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/api/profile/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"profile",
+								""
+							]
+						},
+						"description": "Obtém as informações do perfil do usuário logado (Voluntário ou ONG)."
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Perfil Voluntário",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"role\": \"VOLUNTEER\",\n  \"cpf\": \"12345678901\",\n  \"phone\": \"(11) 99999-9999\",\n  \"bio\": \"Sou voluntário querendo ajudar no projeto.\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/profile/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"profile",
+								""
+							]
+						},
+						"description": "Cria o perfil do usuário logado como VOLUNTÁRIO. Os campos CPF e telefone serão salvos criptografados de forma transparente no banco de dados."
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Perfil ONG",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"role\": \"NGO\",\n  \"cnpj\": \"12345678000199\",\n  \"phone\": \"(11) 5555-5555\",\n  \"address\": \"Avenida Paulista, 1000 - São Paulo, SP\",\n  \"description\": \"ONG focada em auxílio social.\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/profile/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"profile",
+								""
+							]
+						},
+						"description": "Cria o perfil do usuário logado como ONG. Os campos CNPJ, telefone e endereço serão salvos criptografados de forma transparente no banco de dados."
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Perfil",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"(11) 98888-8888\",\n  \"bio\": \"Biografia modificada pelo voluntário.\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/profile/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"profile",
+								""
+							]
+						},
+						"description": "Atualiza os dados de contato ou biografia do usuário logado."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vagas (Vacancies)",
+			"item": [
+				{
+					"name": "Listar Vagas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/api/vacancies/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"vacancies",
+								""
+							]
+						},
+						"description": "Retorna a lista de todas as vagas abertas por todas as ONGs."
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Vaga",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Auxiliar de Informática\",\n  \"description\": \"Vaga para ensinar Pacote Office básico e Windows para idosos.\",\n  \"requirements\": \"Paciência e didática básica.\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/vacancies/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"vacancies",
+								""
+							]
+						},
+						"description": "Cadastra uma nova vaga de voluntariado. (Restrito a usuários do tipo ONG)."
+					},
+					"response": []
+				},
+				{
+					"name": "Obter Detalhes da Vaga",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/api/vacancies/1/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"vacancies",
+								"1",
+								""
+							]
+						},
+						"description": "Retorna os detalhes de uma vaga específica pelo ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Editar Vaga",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Auxiliar de Informática - Sábados\",\n  \"description\": \"Vaga para ensinar Pacote Office básico aos sábados de manhã.\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/vacancies/1/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"vacancies",
+								"1",
+								""
+							]
+						},
+						"description": "Edita os campos da vaga. (Restrito à ONG proprietária da vaga)."
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Vaga",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/api/vacancies/1/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"vacancies",
+								"1",
+								""
+							]
+						},
+						"description": "Remove uma vaga de voluntariado e suas candidaturas associadas. (Restrito à ONG proprietária da vaga)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Candidaturas (Applications)",
+			"item": [
+				{
+					"name": "Candidatar-se a Vaga",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/api/vacancies/1/apply/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"vacancies",
+								"1",
+								"apply",
+								""
+							]
+						},
+						"description": "Envia uma candidatura para uma vaga. (Restrito a usuários do tipo Voluntário). Um voluntário só pode se candidatar uma vez para cada vaga."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Candidaturas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/api/applications/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"applications",
+								""
+							]
+						},
+						"description": "Se o usuário for Voluntário: Retorna as candidaturas que ele enviou e seus status.\nSe o usuário for ONG: Retorna as candidaturas recebidas para as suas vagas, incluindo o contato do voluntário (descriptografado dinamicamente)."
+					},
+					"response": []
+				},
+				{
+					"name": "Decidir Status Candidatura",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"ACCEPTED\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/applications/1/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"applications",
+								"1",
+								""
+							]
+						},
+						"description": "Altera o status da candidatura para ACCEPTED (Aceito) ou REJECTED (Rejeitado). (Restrito à ONG proprietária da vaga associada)."
+					},
+					"response": []
+				},
+				{
+					"name": "Cancelar Candidatura",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/api/applications/1/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"applications",
+								"1",
+								""
+							]
+						},
+						"description": "Cancela/remove uma candidatura. (Restrito ao Voluntário que enviou a candidatura)."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
