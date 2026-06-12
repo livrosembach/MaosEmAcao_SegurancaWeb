@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mãos em Ação - Minhas Inscrições</title>
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="nav-brand">Mãos em Ação</div>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="volunteer-dashboard.html" class="sidebar-item">Dashboard</a>
+                <a href="opportunities.html" class="sidebar-item">Oportunidades</a>
+                <a href="my-applications.html" class="sidebar-item">Minhas Inscrições</a>
+                <a href="volunteer-profile.html" class="sidebar-item">Meu Perfil</a>
+                
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navbar -->
+            <header class="navbar">
+                <button class="mobile-menu-btn">☰</button>
+                <div class="nav-menu">
+                    <span class="nav-item">Olá, Voluntário</span>
+                    <a href="login.html" class="nav-item text-danger">Sair</a>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                
+            <div class="page-header">
+                <h1>Minhas Inscrições</h1>
+                <a href="opportunities.html" class="btn btn-primary">Procurar Vagas</a>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Oportunidade</th>
+                            <th>ONG</th>
+                            <th>Data do Evento</th>
+                            <th>Status da Inscrição</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Triagem de Roupas</td>
+                            <td>Ação Solidária</td>
+                            <td>20/06/2026</td>
+                            <td><span class="badge badge-success">Aprovado</span></td>
+                            <td><button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">Detalhes</button></td>
+                        </tr>
+                        <tr>
+                            <td>Reforço de Matemática</td>
+                            <td>Educar Brasil</td>
+                            <td>25/06/2026</td>
+                            <td><span class="badge badge-warning">Em Análise</span></td>
+                            <td><button class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">Cancelar</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        
+            </div>
+        </main>
+    </div>
