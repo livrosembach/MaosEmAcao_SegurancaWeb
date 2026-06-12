@@ -1,12 +1,13 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}M&atilde;os em A&ccedil;&atilde;o - Editar Oportunidade{% endblock %}
+{% block title %}Mãos em Ação - Editar Oportunidade{% endblock %}
 
 {% block content %}
 <div class="app-container">
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="nav-brand">M&atilde;os em A&ccedil;&atilde;o</div>
+            <div class="nav-brand">Mãos em Ação</div>
         </div>
         <nav class="sidebar-menu">
             <a href="{% url 'ngo_dashboard' %}" class="sidebar-item">Dashboard</a>
@@ -20,7 +21,7 @@
         <header class="navbar">
             <button class="mobile-menu-btn" type="button">&#9776;</button>
             <div class="nav-menu">
-                <span class="nav-item">Ol&aacute;, {% if user.is_authenticated %}{{ user.username }}{% else %}ONG Esperan&ccedil;a{% endif %}</span>
+                <span class="nav-item">Olá, {{ user.username }}</span>
                 <a href="{% url 'account_logout' %}" class="nav-item text-danger">Sair</a>
             </div>
         </header>
@@ -31,44 +32,77 @@
                 <a href="{% url 'ngo_opportunities' %}" class="btn btn-secondary">Voltar</a>
             </div>
 
-            <div class="card">
-                <form>
-                    <div class="form-group">
-                        <label class="form-label">T&iacute;tulo</label>
-                        <input type="text" class="form-control" value="Coleta de Brinquedos">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Descri&ccedil;&atilde;o</label>
-                        <textarea class="form-control" rows="5">Campanha de arrecada&ccedil;&atilde;o de brinquedos para doa&ccedil;&atilde;o.</textarea>
-                    </div>
-                    <div class="grid grid-cols-2">
-                        <div class="form-group">
-                            <label class="form-label">Data</label>
-                            <input type="date" class="form-control" value="2026-06-30">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Quantidade de Vagas</label>
-                            <input type="number" class="form-control" value="15" min="1">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Local</label>
-                        <input type="text" class="form-control" value="Sede da ONG">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Categoria</label>
-                        <select class="form-control">
-                            <option selected>Doa&ccedil;&atilde;o</option>
-                            <option>Educa&ccedil;&atilde;o</option>
-                            <option>Sa&uacute;de</option>
-                            <option>Assist&ecirc;ncia Social</option>
-                            <option>Meio Ambiente</option>
-                        </select>
-                    </div>
-                    <button type="button" class="btn btn-primary">Salvar Alterações</button>
-                </form>
+            <div id="loading-state" style="color:var(--text-secondary); padding:1rem 0;">Carregando...</div>
+            <div id="form-card" class="card" style="display:none;">
+                <div class="form-group">
+                    <label class="form-label">Título <span style="color:var(--danger);">*</span></label>
+                    <input type="text" id="field-title" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descrição <span style="color:var(--danger);">*</span></label>
+                    <textarea id="field-description" class="form-control" rows="5"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Requisitos</label>
+                    <textarea id="field-requirements" class="form-control" rows="3"></textarea>
+                </div>
+                <button id="save-btn" class="btn btn-primary" type="button">Salvar Alterações</button>
             </div>
         </div>
     </main>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/api.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    const id = API.getUrlId();
+    const loadingState = document.getElementById('loading-state');
+    const formCard = document.getElementById('form-card');
+    const saveBtn = document.getElementById('save-btn');
+
+    if (!id) {
+        loadingState.textContent = 'ID da vaga não informado.';
+        loadingState.style.color = 'var(--danger)';
+        return;
+    }
+
+    try {
+        const v = await API.vacancies.get(id);
+        document.getElementById('field-title').value = v.title;
+        document.getElementById('field-description').value = v.description;
+        document.getElementById('field-requirements').value = v.requirements || '';
+        loadingState.style.display = 'none';
+        formCard.style.display = '';
+    } catch (err) {
+        loadingState.textContent = err.message;
+        loadingState.style.color = 'var(--danger)';
+    }
+
+    saveBtn.addEventListener('click', async () => {
+        const title = document.getElementById('field-title').value.trim();
+        const description = document.getElementById('field-description').value.trim();
+
+        if (!title || !description) {
+            API.showToast('Título e descrição são obrigatórios.', 'error');
+            return;
+        }
+
+        API.setLoading(saveBtn, true);
+        try {
+            await API.vacancies.update(id, {
+                title,
+                description,
+                requirements: document.getElementById('field-requirements').value.trim(),
+            });
+            API.showToast('Vaga atualizada com sucesso!');
+            setTimeout(() => window.location.href = "{% url 'ngo_opportunities' %}", 1200);
+        } catch (err) {
+            API.showToast(err.message, 'error');
+            API.setLoading(saveBtn, false);
+        }
+    });
+});
+</script>
 {% endblock %}

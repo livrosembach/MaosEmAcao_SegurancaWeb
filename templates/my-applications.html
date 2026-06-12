@@ -1,17 +1,18 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}M&atilde;os em A&ccedil;&atilde;o - Minhas Inscri&ccedil;&otilde;es{% endblock %}
+{% block title %}Mãos em Ação - Minhas Inscrições{% endblock %}
 
 {% block content %}
 <div class="app-container">
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="nav-brand">M&atilde;os em A&ccedil;&atilde;o</div>
+            <div class="nav-brand">Mãos em Ação</div>
         </div>
         <nav class="sidebar-menu">
             <a href="{% url 'volunteer_dashboard' %}" class="sidebar-item">Dashboard</a>
             <a href="{% url 'opportunities' %}" class="sidebar-item">Oportunidades</a>
-            <a href="{% url 'my_applications' %}" class="sidebar-item">Minhas Inscri&ccedil;&otilde;es</a>
+            <a href="{% url 'my_applications' %}" class="sidebar-item">Minhas Inscrições</a>
             <a href="{% url 'volunteer_profile' %}" class="sidebar-item">Meu Perfil</a>
         </nav>
     </aside>
@@ -20,14 +21,14 @@
         <header class="navbar">
             <button class="mobile-menu-btn" type="button">&#9776;</button>
             <div class="nav-menu">
-                <span class="nav-item">Ol&aacute;, {% if user.is_authenticated %}{{ user.username }}{% else %}Volunt&aacute;rio{% endif %}</span>
+                <span class="nav-item">Olá, {{ user.username }}</span>
                 <a href="{% url 'account_logout' %}" class="nav-item text-danger">Sair</a>
             </div>
         </header>
 
         <div class="content-wrapper">
             <div class="page-header">
-                <h1>Minhas Inscri&ccedil;&otilde;es</h1>
+                <h1>Minhas Inscrições</h1>
                 <a href="{% url 'opportunities' %}" class="btn btn-primary">Procurar Vagas</a>
             </div>
 
@@ -37,30 +38,102 @@
                         <tr>
                             <th>Oportunidade</th>
                             <th>ONG</th>
-                            <th>Data do Evento</th>
-                            <th>Status da Inscri&ccedil;&atilde;o</th>
-                            <th>A&ccedil;&otilde;es</th>
+                            <th>Data da Inscrição</th>
+                            <th>Status</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>Triagem de Roupas</td>
-                            <td>A&ccedil;&atilde;o Solid&aacute;ria</td>
-                            <td>20/06/2026</td>
-                            <td><span class="badge badge-success">Aprovado</span></td>
-                            <td><button class="btn btn-secondary" type="button" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">Detalhes</button></td>
-                        </tr>
-                        <tr>
-                            <td>Refor&ccedil;o de Matem&aacute;tica</td>
-                            <td>Educar Brasil</td>
-                            <td>25/06/2026</td>
-                            <td><span class="badge badge-warning">Em An&aacute;lise</span></td>
-                            <td><button class="btn btn-danger" type="button" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">Cancelar</button></td>
-                        </tr>
+                    <tbody id="applications-body">
+                        <tr><td colspan="5" style="color:var(--text-secondary);">Carregando...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </main>
 </div>
+
+<!-- Modal cancelar -->
+<div class="modal-backdrop" id="cancelModal">
+    <div class="modal-content">
+        <h3 style="margin-top:0;">Cancelar Inscrição</h3>
+        <p>Tem certeza que deseja cancelar a inscrição em <strong id="cancel-vacancy-title">—</strong>?</p>
+        <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:2rem;">
+            <button class="btn btn-secondary" type="button" data-modal-close>Voltar</button>
+            <button id="confirm-cancel-btn" class="btn btn-danger" type="button">Cancelar Inscrição</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/api.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    const tbody = document.getElementById('applications-body');
+    const cancelModal = document.getElementById('cancelModal');
+    const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+    let selectedAppId = null;
+
+    async function loadApplications() {
+        try {
+            const apps = await API.applications.list();
+            tbody.innerHTML = '';
+
+            if (apps.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text-secondary);">Você ainda não se candidatou a nenhuma vaga.</td></tr>';
+                return;
+            }
+
+            apps.forEach(app => {
+                const tr = document.createElement('tr');
+                tr.id = `app-row-${app.id}`;
+                tr.innerHTML = `
+                    <td>${app.vacancy.title}</td>
+                    <td>${app.vacancy.ngo_name}</td>
+                    <td>${API.formatDate(app.applied_at)}</td>
+                    <td>${API.statusBadge(app.status)}</td>
+                    <td>
+                        ${app.status === 'PENDING' ? `
+                            <button class="btn btn-danger cancel-btn" data-id="${app.id}" data-title="${app.vacancy.title}" style="padding:0.25rem 0.5rem; font-size:0.875rem;">
+                                Cancelar
+                            </button>
+                        ` : '—'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Bind cancel buttons
+            document.querySelectorAll('.cancel-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    selectedAppId = btn.dataset.id;
+                    document.getElementById('cancel-vacancy-title').textContent = btn.dataset.title;
+                    cancelModal.classList.add('open');
+                });
+            });
+
+        } catch (err) {
+            tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">${err.message}</td></tr>`;
+        }
+    }
+
+    confirmCancelBtn.addEventListener('click', async () => {
+        if (!selectedAppId) return;
+        API.setLoading(confirmCancelBtn, true);
+        try {
+            await API.applications.cancel(selectedAppId);
+            cancelModal.classList.remove('open');
+            document.getElementById(`app-row-${selectedAppId}`)?.remove();
+            API.showToast('Inscrição cancelada com sucesso.');
+            selectedAppId = null;
+        } catch (err) {
+            API.showToast(err.message, 'error');
+        } finally {
+            API.setLoading(confirmCancelBtn, false);
+        }
+    });
+
+    loadApplications();
+});
+</script>
 {% endblock %}

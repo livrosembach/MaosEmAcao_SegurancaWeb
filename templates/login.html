@@ -14,7 +14,12 @@
             Entre com sua conta para acessar os pain&eacute;is, candidaturas e ferramentas da plataforma.
         </p>
 
-        <a href="{% url 'amazon_cognito_login' %}" class="btn btn-primary" style="width: 100%;">Entrar com Cognito</a>
+        <!-- <a href="{% url 'amazon_cognito_login' %}" class="btn btn-primary" style="width: 100%;">Entrar com Cognito</a> -->
+        <form method="post" action="{% url 'amazon_cognito_login' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar com Cognito</button>
+        </form>
+
 
         <div style="text-align: center; margin-top: 1.5rem; font-size: 0.875rem;">
             N&atilde;o tem uma conta? <a href="{% url 'register_page' %}" class="text-primary">Cadastre-se</a>

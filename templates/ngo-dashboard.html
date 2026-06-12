@@ -1,12 +1,13 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}M&atilde;os em A&ccedil;&atilde;o - Dashboard ONG{% endblock %}
+{% block title %}Mãos em Ação - Dashboard ONG{% endblock %}
 
 {% block content %}
 <div class="app-container">
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="nav-brand">M&atilde;os em A&ccedil;&atilde;o</div>
+            <div class="nav-brand">Mãos em Ação</div>
         </div>
         <nav class="sidebar-menu">
             <a href="{% url 'ngo_dashboard' %}" class="sidebar-item">Dashboard</a>
@@ -20,7 +21,7 @@
         <header class="navbar">
             <button class="mobile-menu-btn" type="button">&#9776;</button>
             <div class="nav-menu">
-                <span class="nav-item">Ol&aacute;, {% if user.is_authenticated %}{{ user.username }}{% else %}ONG Esperan&ccedil;a{% endif %}</span>
+                <span class="nav-item">Olá, {{ user.username }}</span>
                 <a href="{% url 'account_logout' %}" class="nav-item text-danger">Sair</a>
             </div>
         </header>
@@ -31,38 +32,92 @@
                 <a href="{% url 'create_opportunity' %}" class="btn btn-primary">+ Nova Oportunidade</a>
             </div>
 
-            <div class="grid grid-cols-4 mb-6" style="margin-bottom: 2rem;">
+            <div class="grid grid-cols-4 mb-6" style="margin-bottom:2rem;">
                 <div class="card stat-card">
                     <div class="stat-content">
-                        <h3>5</h3>
-                        <p>Oportunidades Abertas</p>
+                        <h3 id="stat-vacancies">—</h3>
+                        <p>Vagas Abertas</p>
                     </div>
                 </div>
                 <div class="card stat-card">
                     <div class="stat-content">
-                        <h3>12</h3>
-                        <p>Encerradas</p>
+                        <h3 id="stat-total-apps">—</h3>
+                        <p>Inscrições Recebidas</p>
                     </div>
                 </div>
                 <div class="card stat-card">
                     <div class="stat-content">
-                        <h3>34</h3>
-                        <p>Inscri&ccedil;&otilde;es Recebidas</p>
+                        <h3 id="stat-pending">—</h3>
+                        <p>Pendentes de Análise</p>
                     </div>
                 </div>
                 <div class="card stat-card">
                     <div class="stat-content">
-                        <h3>18</h3>
-                        <p>Volunt&aacute;rios Ativos</p>
+                        <h3 id="stat-accepted">—</h3>
+                        <p>Voluntários Aceitos</p>
                     </div>
                 </div>
             </div>
 
-            <h2>Resumo Recente</h2>
-            <div class="card">
-                <p>Sua &uacute;ltima campanha teve grande engajamento. Verifique os inscritos!</p>
+            <h2>Inscrições Recentes</h2>
+            <div class="table-container" style="margin-top:1rem;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Voluntário</th>
+                            <th>Vaga</th>
+                            <th>Data</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-apps-body">
+                        <tr><td colspan="4" style="color:var(--text-secondary);">Carregando...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </main>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/api.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const [vacancies, apps] = await Promise.all([
+            API.vacancies.list(),
+            API.applications.list(),
+        ]);
+
+        document.getElementById('stat-vacancies').textContent = vacancies.length;
+        document.getElementById('stat-total-apps').textContent = apps.length;
+        document.getElementById('stat-pending').textContent = apps.filter(a => a.status === 'PENDING').length;
+        document.getElementById('stat-accepted').textContent = apps.filter(a => a.status === 'ACCEPTED').length;
+
+        const tbody = document.getElementById('recent-apps-body');
+        const recent = apps.slice(0, 5);
+        tbody.innerHTML = '';
+
+        if (recent.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-secondary);">Nenhuma inscrição recebida ainda.</td></tr>';
+            return;
+        }
+
+        recent.forEach(app => {
+            tbody.insertAdjacentHTML('beforeend', `
+                <tr>
+                    <td>${app.volunteer.username}</td>
+                    <td>${app.vacancy.title}</td>
+                    <td>${API.formatDate(app.applied_at)}</td>
+                    <td>${API.statusBadge(app.status)}</td>
+                </tr>
+            `);
+        });
+    } catch (err) {
+        document.getElementById('recent-apps-body').innerHTML =
+            `<tr><td colspan="4" style="color:var(--danger);">${err.message}</td></tr>`;
+    }
+});
+</script>
 {% endblock %}

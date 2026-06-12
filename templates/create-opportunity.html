@@ -1,12 +1,13 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}M&atilde;os em A&ccedil;&atilde;o - Criar Oportunidade{% endblock %}
+{% block title %}Mãos em Ação - Criar Oportunidade{% endblock %}
 
 {% block content %}
 <div class="app-container">
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="nav-brand">M&atilde;os em A&ccedil;&atilde;o</div>
+            <div class="nav-brand">Mãos em Ação</div>
         </div>
         <nav class="sidebar-menu">
             <a href="{% url 'ngo_dashboard' %}" class="sidebar-item">Dashboard</a>
@@ -20,7 +21,7 @@
         <header class="navbar">
             <button class="mobile-menu-btn" type="button">&#9776;</button>
             <div class="nav-menu">
-                <span class="nav-item">Ol&aacute;, {% if user.is_authenticated %}{{ user.username }}{% else %}ONG Esperan&ccedil;a{% endif %}</span>
+                <span class="nav-item">Olá, {{ user.username }}</span>
                 <a href="{% url 'account_logout' %}" class="nav-item text-danger">Sair</a>
             </div>
         </header>
@@ -32,42 +33,51 @@
             </div>
 
             <div class="card">
-                <form>
-                    <div class="form-group">
-                        <label class="form-label">T&iacute;tulo</label>
-                        <input type="text" class="form-control" placeholder="Ex.: Aulas de Programa&ccedil;&atilde;o B&aacute;sica">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Descri&ccedil;&atilde;o</label>
-                        <textarea class="form-control" rows="5" placeholder="Descreva a atividade, objetivo e perfil desejado"></textarea>
-                    </div>
-                    <div class="grid grid-cols-2">
-                        <div class="form-group">
-                            <label class="form-label">Data</label>
-                            <input type="date" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Quantidade de Vagas</label>
-                            <input type="number" class="form-control" min="1">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Local</label>
-                        <input type="text" class="form-control" placeholder="Endere&ccedil;o ou ponto de encontro">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Categoria</label>
-                        <select class="form-control">
-                            <option>Educa&ccedil;&atilde;o</option>
-                            <option>Sa&uacute;de</option>
-                            <option>Assist&ecirc;ncia Social</option>
-                            <option>Meio Ambiente</option>
-                        </select>
-                    </div>
-                    <button type="button" class="btn btn-primary">Salvar Oportunidade</button>
-                </form>
+                <div class="form-group">
+                    <label class="form-label">Título <span style="color:var(--danger);">*</span></label>
+                    <input type="text" id="field-title" class="form-control" placeholder="Ex.: Aulas de Programação Básica">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descrição <span style="color:var(--danger);">*</span></label>
+                    <textarea id="field-description" class="form-control" rows="5" placeholder="Descreva a atividade, objetivo e perfil desejado"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Requisitos</label>
+                    <textarea id="field-requirements" class="form-control" rows="3" placeholder="Habilidades ou pré-requisitos desejados (opcional)"></textarea>
+                </div>
+                <button id="save-btn" class="btn btn-primary" type="button">Salvar Oportunidade</button>
             </div>
         </div>
     </main>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/api.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const saveBtn = document.getElementById('save-btn');
+
+    saveBtn.addEventListener('click', async () => {
+        const title = document.getElementById('field-title').value.trim();
+        const description = document.getElementById('field-description').value.trim();
+        const requirements = document.getElementById('field-requirements').value.trim();
+
+        if (!title || !description) {
+            API.showToast('Título e descrição são obrigatórios.', 'error');
+            return;
+        }
+
+        API.setLoading(saveBtn, true);
+        try {
+            await API.vacancies.create({ title, description, requirements });
+            API.showToast('Vaga criada com sucesso!');
+            setTimeout(() => window.location.href = "{% url 'ngo_opportunities' %}", 1200);
+        } catch (err) {
+            API.showToast(err.message, 'error');
+            API.setLoading(saveBtn, false);
+        }
+    });
+});
+</script>
 {% endblock %}
