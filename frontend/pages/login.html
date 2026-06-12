@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mãos em Ação - Entrar</title>
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body>
+<body>
+
+    <div class="auth-container">
+        <div class="card auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">Mãos em Ação</div>
+                <p>Faça login para acessar sua conta</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="email">E-mail</label>
+                    <input type="email" id="email" class="form-control" required placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Senha</label>
+                    <input type="password" id="password" class="form-control" required placeholder="••••••••">
+                </div>
+                <div style="text-align: right; margin-bottom: 1rem;">
+                    <a href="#" class="text-primary" style="font-size: 0.875rem;">Esqueci minha senha</a>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
+            </form>
+            <div style="text-align: center; margin-top: 1.5rem; font-size: 0.875rem;">
+                Não tem uma conta? <a href="register.html" class="text-primary">Cadastre-se</a>
+            </div>
+            <div style="text-align: center; margin-top: 1rem; font-size: 0.75rem; color: var(--text-secondary);">
+                * Digite 'admin', 'ong' ou 'voluntario' no email para testar os perfis
+            </div>
+        </div>
+    </div>
+        
+<script src="../js/auth.js"></script>
+</body></html>

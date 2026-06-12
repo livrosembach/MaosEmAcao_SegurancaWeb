@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mãos em Ação - Dashboard</title>
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="nav-brand">Mãos em Ação</div>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="volunteer-dashboard.html" class="sidebar-item">Dashboard</a>
+                <a href="opportunities.html" class="sidebar-item">Oportunidades</a>
+                <a href="my-applications.html" class="sidebar-item">Minhas Inscrições</a>
+                <a href="volunteer-profile.html" class="sidebar-item">Meu Perfil</a>
+                
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navbar -->
+            <header class="navbar">
+                <button class="mobile-menu-btn">☰</button>
+                <div class="nav-menu">
+                    <span class="nav-item">Olá, Voluntário</span>
+                    <a href="login.html" class="nav-item text-danger">Sair</a>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                
+            <div class="page-header">
+                <div>
+                    <h1>Meu Painel</h1>
+                    <p>Bem-vindo ao sistema, acompanhe seu engajamento.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 mb-6" style="margin-bottom: 2rem;">
+                <div class="card stat-card">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-content">
+                        <h3>12</h3>
+                        <p>Inscrições Realizadas</p>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-content">
+                        <h3>8</h3>
+                        <p>Ações Concluídas</p>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-icon">🗓️</div>
+                    <div class="stat-content">
+                        <h3>2</h3>
+                        <p>Próximos Eventos</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Últimas Oportunidades</h2>
+            <div class="grid grid-cols-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Triagem de Roupas</h3>
+                        <span class="badge badge-primary">Assistência</span>
+                    </div>
+                    <div class="card-body">
+                        <p>Ajude a separar roupas doadas para a campanha do agasalho.</p>
+                        <p><strong>Data:</strong> 20/06/2026</p>
+                        <p><strong>ONG:</strong> Ação Solidária</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="opportunity-details.html" class="btn btn-secondary">Ver Detalhes</a>
+                    </div>
+                </div>
+            </div>
+        
+            </div>
+        </main>
+    </div>
