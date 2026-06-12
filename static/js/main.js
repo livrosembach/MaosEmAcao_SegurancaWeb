@@ -38,16 +38,26 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Highlight active sidebar item
-  const currentPath = window.location.pathname.split('/').pop();
+  const currentPath = normalizePath(window.location.pathname);
   const sidebarItems = document.querySelectorAll('.sidebar-item');
   
   sidebarItems.forEach(item => {
     const href = item.getAttribute('href');
-    if (href && (href === currentPath || (currentPath === '' && href === 'home.html'))) {
+    if (!href) {
+      return;
+    }
+
+    const itemPath = normalizePath(new URL(href, window.location.origin).pathname);
+    if (itemPath === currentPath) {
       item.classList.add('active');
     }
   });
 });
+
+function normalizePath(pathname) {
+  const trimmed = pathname.replace(/\/+$/, '');
+  return trimmed === '' ? '/' : trimmed;
+}
 
 // Utility to create HTML elements safely
 function createElement(tag, className, content) {

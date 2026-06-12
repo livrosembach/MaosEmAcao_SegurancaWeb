@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mãos em Ação - Criar Oportunidade{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="nav-brand">Mãos em Ação</div>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="{% url 'ngo_dashboard' %}" class="sidebar-item">Dashboard</a>
+            <a href="{% url 'ngo_opportunities' %}" class="sidebar-item">Gerenciar Oportunidades</a>
+            <a href="{% url 'ngo_applicants' %}" class="sidebar-item">Inscritos</a>
+            <a href="{% url 'ngo_profile' %}" class="sidebar-item">Perfil da ONG</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="navbar">
+            <button class="mobile-menu-btn" type="button">&#9776;</button>
+            <div class="nav-menu">
+                <span class="nav-item">Olá, {{ user.username }}</span>
+                <a href="{% url 'account_logout' %}" class="nav-item text-danger">Sair</a>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>Nova Oportunidade</h1>
+                <a href="{% url 'ngo_opportunities' %}" class="btn btn-secondary">Voltar</a>
+            </div>
+
+            <div class="card">
+                <div class="form-group">
+                    <label class="form-label">Título <span style="color:var(--danger);">*</span></label>
+                    <input type="text" id="field-title" class="form-control" placeholder="Ex.: Aulas de Programação Básica">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descrição <span style="color:var(--danger);">*</span></label>
+                    <textarea id="field-description" class="form-control" rows="5" placeholder="Descreva a atividade, objetivo e perfil desejado"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Requisitos</label>
+                    <textarea id="field-requirements" class="form-control" rows="3" placeholder="Habilidades ou pré-requisitos desejados (opcional)"></textarea>
+                </div>
+                <button id="save-btn" class="btn btn-primary" type="button">Salvar Oportunidade</button>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/api.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const saveBtn = document.getElementById('save-btn');
+
+    saveBtn.addEventListener('click', async () => {
+        const title = document.getElementById('field-title').value.trim();
+        const description = document.getElementById('field-description').value.trim();
+        const requirements = document.getElementById('field-requirements').value.trim();
+
+        if (!title || !description) {
+            API.showToast('Título e descrição são obrigatórios.', 'error');
+            return;
+        }
+
+        API.setLoading(saveBtn, true);
+        try {
+            await API.vacancies.create({ title, description, requirements });
+            API.showToast('Vaga criada com sucesso!');
+            setTimeout(() => window.location.href = "{% url 'ngo_opportunities' %}", 1200);
+        } catch (err) {
+            API.showToast(err.message, 'error');
+            API.setLoading(saveBtn, false);
+        }
+    });
+});
+</script>
+{% endblock %}

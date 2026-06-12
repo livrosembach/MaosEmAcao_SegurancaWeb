@@ -229,7 +229,6 @@ def vacancies_list_create_view(request):
     # --- LIST VACANCIES (GET) ---
     if request.method == 'GET':
         # Proteção SQL Injection: Utiliza estritamente o ORM do Django
-        vacancies = Vacancy.objects.all().select_related('ngo__profile__user').order_index_by('-created_at')
         # Wait, order_by instead of order_index_by (which was a typo)
         # Let's fix that
         vacancies = Vacancy.objects.all().select_related('ngo__profile__user').order_by('-created_at')

@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mãos em Ação - Gerenciar Oportunidades{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="nav-brand">Mãos em Ação</div>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="{% url 'ngo_dashboard' %}" class="sidebar-item">Dashboard</a>
+            <a href="{% url 'ngo_opportunities' %}" class="sidebar-item">Gerenciar Oportunidades</a>
+            <a href="{% url 'ngo_applicants' %}" class="sidebar-item">Inscritos</a>
+            <a href="{% url 'ngo_profile' %}" class="sidebar-item">Perfil da ONG</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="navbar">
+            <button class="mobile-menu-btn" type="button">&#9776;</button>
+            <div class="nav-menu">
+                <span class="nav-item">Olá, {{ user.username }}</span>
+                <a href="{% url 'account_logout' %}" class="nav-item text-danger">Sair</a>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>Oportunidades</h1>
+                <a href="{% url 'create_opportunity' %}" class="btn btn-primary">+ Nova</a>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Publicado em</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vacancies-body">
+                        <tr><td colspan="3" style="color:var(--text-secondary);">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal deletar -->
+<div class="modal-backdrop" id="deleteModal">
+    <div class="modal-content">
+        <h3 style="margin-top:0;">Excluir Vaga</h3>
+        <p>Tem certeza que deseja excluir a vaga <strong id="delete-vacancy-title">—</strong>? Esta ação também removerá todas as candidaturas associadas.</p>
+        <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:2rem;">
+            <button class="btn btn-secondary" type="button" data-modal-close>Cancelar</button>
+            <button id="confirm-delete-btn" class="btn btn-danger" type="button">Excluir</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/api.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    const tbody = document.getElementById('vacancies-body');
+    const deleteModal = document.getElementById('deleteModal');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    let selectedVacancyId = null;
+
+    async function loadVacancies() {
+        try {
+            // A API retorna TODAS as vagas; filtramos as da ONG logada pelo username
+            const all = await API.vacancies.list();
+            const username = '{{ user.username }}';
+            const mine = all.filter(v => v.ngo.name === username);
+
+            tbody.innerHTML = '';
+            if (mine.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-secondary);">Você ainda não criou nenhuma vaga.</td></tr>';
+                return;
+            }
+            mine.forEach(v => {
+                const tr = document.createElement('tr');
+                tr.id = `vacancy-row-${v.id}`;
+                tr.innerHTML = `
+                    <td>${v.title}</td>
+                    <td>${API.formatDate(v.created_at)}</td>
+                    <td style="display:flex; gap:0.5rem;">
+                        <a href="/ong/oportunidades/editar/?id=${v.id}" class="btn btn-secondary" style="padding:0.2rem 0.5rem;">Editar</a>
+                        <button class="btn btn-danger delete-btn" data-id="${v.id}" data-title="${v.title}" style="padding:0.2rem 0.5rem;">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    selectedVacancyId = btn.dataset.id;
+                    document.getElementById('delete-vacancy-title').textContent = btn.dataset.title;
+                    deleteModal.classList.add('open');
+                });
+            });
+        } catch (err) {
+            tbody.innerHTML = `<tr><td colspan="3" style="color:var(--danger);">${err.message}</td></tr>`;
+        }
+    }
+
+    confirmDeleteBtn.addEventListener('click', async () => {
+        if (!selectedVacancyId) return;
+        API.setLoading(confirmDeleteBtn, true);
+        try {
+            await API.vacancies.delete(selectedVacancyId);
+            deleteModal.classList.remove('open');
+            document.getElementById(`vacancy-row-${selectedVacancyId}`)?.remove();
+            API.showToast('Vaga excluída com sucesso.');
+            selectedVacancyId = null;
+        } catch (err) {
+            API.showToast(err.message, 'error');
+        } finally {
+            API.setLoading(confirmDeleteBtn, false);
+        }
+    });
+
+    loadVacancies();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mãos em Ação - Oportunidades{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="nav-brand">Mãos em Ação</div>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="{% url 'volunteer_dashboard' %}" class="sidebar-item">Voltar ao Painel</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="navbar">
+            <button class="mobile-menu-btn" type="button">&#9776;</button>
+            <div class="nav-menu">
+                <span class="nav-item">Olá, {{ user.username }}</span>
+                <a href="{% url 'account_logout' %}" class="nav-item text-danger">Sair</a>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>Oportunidades Disponíveis</h1>
+            </div>
+
+            <div class="card opportunity-filters">
+                <input type="text" id="searchOpportunity" class="form-control opportunity-search" placeholder="Busque por título ou ONG...">
+            </div>
+
+            <div id="vacancies-grid" class="grid grid-cols-2" style="margin-top:2rem;">
+                <p id="loading-msg" style="color:var(--text-secondary);">Carregando oportunidades...</p>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/api.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    const grid = document.getElementById('vacancies-grid');
+    const loadingMsg = document.getElementById('loading-msg');
+    const searchInput = document.getElementById('searchOpportunity');
+    let allVacancies = [];
+
+    function renderVacancies(list) {
+        grid.innerHTML = '';
+        if (list.length === 0) {
+            grid.innerHTML = '<p style="color:var(--text-secondary);">Nenhuma oportunidade encontrada.</p>';
+            return;
+        }
+        list.forEach(v => {
+            grid.insertAdjacentHTML('beforeend', `
+                <div class="card" data-opportunity-card>
+                    <div class="card-header">
+                        <h3 class="card-title">${v.title}</h3>
+                        <span class="badge badge-primary">Aberto</span>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>ONG:</strong> ${v.ngo.name}</p>
+                        <p style="margin-top:0.5rem;">${v.description.substring(0, 120)}${v.description.length > 120 ? '...' : ''}</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="/oportunidades/detalhes/?id=${v.id}" class="btn btn-primary">Ver Mais</a>
+                    </div>
+                </div>
+            `);
+        });
+    }
+
+    try {
+        allVacancies = await API.vacancies.list();
+        loadingMsg.remove();
+        renderVacancies(allVacancies);
+    } catch (err) {
+        grid.innerHTML = `<p style="color:var(--danger);">${err.message}</p>`;
+    }
+
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim().toLowerCase();
+        const filtered = allVacancies.filter(v =>
+            v.title.toLowerCase().includes(query) ||
+            v.ngo.name.toLowerCase().includes(query)
+        );
+        renderVacancies(filtered);
+    });
+});
+</script>
+{% endblock %}

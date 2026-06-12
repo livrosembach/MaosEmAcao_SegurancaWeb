@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mãos em Ação - Detalhes da Oportunidade{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="nav-brand">Mãos em Ação</div>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="{% url 'opportunities' %}" class="sidebar-item">Voltar</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="navbar">
+            <button class="mobile-menu-btn" type="button">&#9776;</button>
+            <div class="nav-menu">
+                <span class="nav-item">Olá, {{ user.username }}</span>
+                <a href="{% url 'account_logout' %}" class="nav-item text-danger">Sair</a>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div id="loading-state" style="color:var(--text-secondary); padding: 2rem 0;">Carregando...</div>
+            <div id="vacancy-content" style="display:none;">
+                <div class="page-header">
+                    <h1 id="v-title">—</h1>
+                </div>
+
+                <div class="grid grid-cols-3">
+                    <div class="card" style="grid-column: span 2;">
+                        <h3>Descrição</h3>
+                        <p id="v-description" style="margin-top:0.5rem;"></p>
+
+                        <h3 style="margin-top:2rem;">Requisitos</h3>
+                        <p id="v-requirements" style="margin-top:0.5rem;"></p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Resumo</h3>
+                        <ul style="line-height:2.2;">
+                            <li><strong>Publicado em:</strong> <span id="v-date">—</span></li>
+                            <li><strong>ONG:</strong> <span id="v-ngo">—</span></li>
+                        </ul>
+                        <hr style="margin:1rem 0; border:none; border-top:1px solid var(--border);">
+                        <p id="v-ngo-desc" style="font-size:0.875rem; color:var(--text-secondary);"></p>
+
+                        <button id="apply-btn" class="btn btn-primary" type="button" style="width:100%; margin-top:1rem;" data-modal-target="confirmModal">
+                            Quero me Inscrever!
+                        </button>
+                        <p id="already-applied" class="hidden" style="text-align:center; color:var(--success); margin-top:0.75rem; font-size:0.875rem;">
+                            ✓ Você já se candidatou a esta vaga.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="error-state" class="hidden" style="color:var(--danger); padding:2rem 0;"></div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal de confirmação -->
+<div class="modal-backdrop" id="confirmModal">
+    <div class="modal-content">
+        <h3 style="margin-top:0;">Confirmar Inscrição</h3>
+        <p>Você tem certeza que deseja se candidatar à vaga <strong id="modal-title">—</strong>?</p>
+        <p style="font-size:0.875rem; color:var(--text-secondary);">A ONG receberá seus dados de contato após aprovação.</p>
+        <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:2rem;">
+            <button class="btn btn-secondary" type="button" data-modal-close>Cancelar</button>
+            <button id="confirm-apply-btn" class="btn btn-primary" type="button">Confirmar</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/api.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    const id = API.getUrlId();
+    const loadingState = document.getElementById('loading-state');
+    const vacancyContent = document.getElementById('vacancy-content');
+    const errorState = document.getElementById('error-state');
+    const applyBtn = document.getElementById('apply-btn');
+    const confirmBtn = document.getElementById('confirm-apply-btn');
+    const alreadyApplied = document.getElementById('already-applied');
+
+    if (!id) {
+        loadingState.classList.add('hidden');
+        errorState.textContent = 'ID da vaga não informado.';
+        errorState.classList.remove('hidden');
+        return;
+    }
+
+    try {
+        const v = await API.vacancies.get(id);
+
+        document.getElementById('v-title').textContent = v.title;
+        document.getElementById('v-description').textContent = v.description;
+        document.getElementById('v-requirements').textContent = v.requirements || 'Sem requisitos específicos.';
+        document.getElementById('v-date').textContent = API.formatDate(v.created_at);
+        document.getElementById('v-ngo').textContent = v.ngo.name;
+        document.getElementById('v-ngo-desc').textContent = v.ngo.description || '';
+        document.getElementById('modal-title').textContent = v.title;
+
+        // Verificar se já se candidatou
+        try {
+            const myApps = await API.applications.list();
+            const alreadyIn = myApps.some(a => a.vacancy.id == id);
+            if (alreadyIn) {
+                applyBtn.classList.add('hidden');
+                alreadyApplied.classList.remove('hidden');
+            }
+        } catch (_) { /* não é voluntário, ignora */ }
+
+        loadingState.classList.add('hidden');
+        vacancyContent.style.display = '';
+    } catch (err) {
+        loadingState.classList.add('hidden');
+        errorState.textContent = err.message;
+        errorState.classList.remove('hidden');
+    }
+
+    // Confirmar candidatura
+    confirmBtn.addEventListener('click', async () => {
+        API.setLoading(confirmBtn, true);
+        try {
+            await API.vacancies.apply(id);
+            document.getElementById('confirmModal').classList.remove('open');
+            applyBtn.classList.add('hidden');
+            alreadyApplied.classList.remove('hidden');
+            API.showToast('Candidatura enviada com sucesso!');
+        } catch (err) {
+            API.showToast(err.message, 'error');
+            document.getElementById('confirmModal').classList.remove('open');
+        } finally {
+            API.setLoading(confirmBtn, false);
+        }
+    });
+});
+</script>
+{% endblock %}

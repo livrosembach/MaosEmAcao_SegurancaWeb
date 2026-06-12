@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mãos em Ação - Lista de Inscritos{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="nav-brand">Mãos em Ação</div>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="{% url 'ngo_dashboard' %}" class="sidebar-item">Dashboard</a>
+            <a href="{% url 'ngo_opportunities' %}" class="sidebar-item">Gerenciar Oportunidades</a>
+            <a href="{% url 'ngo_applicants' %}" class="sidebar-item">Inscritos</a>
+            <a href="{% url 'ngo_profile' %}" class="sidebar-item">Perfil da ONG</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="navbar">
+            <button class="mobile-menu-btn" type="button">&#9776;</button>
+            <div class="nav-menu">
+                <span class="nav-item">Olá, {{ user.username }}</span>
+                <a href="{% url 'account_logout' %}" class="nav-item text-danger">Sair</a>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>Inscritos em suas Oportunidades</h1>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Voluntário</th>
+                            <th>E-mail</th>
+                            <th>Telefone</th>
+                            <th>Vaga</th>
+                            <th>Data</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicants-body">
+                        <tr><td colspan="7" style="color:var(--text-secondary);">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/api.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    const tbody = document.getElementById('applicants-body');
+
+    async function updateStatus(appId, status, row) {
+        try {
+            await API.applications.updateStatus(appId, status);
+            const statusCell = row.querySelector('.status-cell');
+            const actionsCell = row.querySelector('.actions-cell');
+            statusCell.innerHTML = API.statusBadge(status);
+            actionsCell.innerHTML = '—';
+            API.showToast(`Candidatura ${status === 'ACCEPTED' ? 'aceita' : 'rejeitada'} com sucesso.`);
+        } catch (err) {
+            API.showToast(err.message, 'error');
+        }
+    }
+
+    try {
+        const apps = await API.applications.list();
+        tbody.innerHTML = '';
+
+        if (apps.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="color:var(--text-secondary);">Nenhuma inscrição recebida ainda.</td></tr>';
+            return;
+        }
+
+        apps.forEach(app => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${app.volunteer.username}</td>
+                <td>${app.volunteer.email}</td>
+                <td>${app.volunteer.phone || '—'}</td>
+                <td>${app.vacancy.title}</td>
+                <td>${API.formatDate(app.applied_at)}</td>
+                <td class="status-cell">${API.statusBadge(app.status)}</td>
+                <td class="actions-cell">
+                    ${app.status === 'PENDING' ? `
+                        <div style="display:flex; gap:0.5rem;">
+                            <button class="btn btn-primary accept-btn" data-id="${app.id}" style="padding:0.2rem 0.5rem;">Aprovar</button>
+                            <button class="btn btn-danger reject-btn" data-id="${app.id}" style="padding:0.2rem 0.5rem;">Rejeitar</button>
+                        </div>
+                    ` : '—'}
+                </td>
+            `;
+            tbody.appendChild(tr);
+
+            if (app.status === 'PENDING') {
+                tr.querySelector('.accept-btn').addEventListener('click', () => updateStatus(app.id, 'ACCEPTED', tr));
+                tr.querySelector('.reject-btn').addEventListener('click', () => updateStatus(app.id, 'REJECTED', tr));
+            }
+        });
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" style="color:var(--danger);">${err.message}</td></tr>`;
+    }
+});
+</script>
+{% endblock %}
