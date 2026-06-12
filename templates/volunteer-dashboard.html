@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}M&atilde;os em A&ccedil;&atilde;o - Dashboard{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="nav-brand">M&atilde;os em A&ccedil;&atilde;o</div>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="{% url 'volunteer_dashboard' %}" class="sidebar-item">Dashboard</a>
+            <a href="{% url 'opportunities' %}" class="sidebar-item">Oportunidades</a>
+            <a href="{% url 'my_applications' %}" class="sidebar-item">Minhas Inscri&ccedil;&otilde;es</a>
+            <a href="{% url 'volunteer_profile' %}" class="sidebar-item">Meu Perfil</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="navbar">
+            <button class="mobile-menu-btn" type="button">&#9776;</button>
+            <div class="nav-menu">
+                <span class="nav-item">Ol&aacute;, {% if user.is_authenticated %}{{ user.username }}{% else %}Volunt&aacute;rio{% endif %}</span>
+                <a href="{% url 'account_logout' %}" class="nav-item text-danger">Sair</a>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <div>
+                    <h1>Meu Painel</h1>
+                    <p>Bem-vindo ao sistema, acompanhe seu engajamento.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 mb-6" style="margin-bottom: 2rem;">
+                <div class="card stat-card">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-content">
+                        <h3>12</h3>
+                        <p>Inscri&ccedil;&otilde;es Realizadas</p>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-content">
+                        <h3>8</h3>
+                        <p>A&ccedil;&otilde;es Conclu&iacute;das</p>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-icon">🗓️</div>
+                    <div class="stat-content">
+                        <h3>2</h3>
+                        <p>Pr&oacute;ximos Eventos</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2>&Uacute;ltimas Oportunidades</h2>
+            <div class="grid grid-cols-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Triagem de Roupas</h3>
+                        <span class="badge badge-primary">Assist&ecirc;ncia</span>
+                    </div>
+                    <div class="card-body">
+                        <p>Ajude a separar roupas doadas para a campanha do agasalho.</p>
+                        <p><strong>Data:</strong> 20/06/2026</p>
+                        <p><strong>ONG:</strong> A&ccedil;&atilde;o Solid&aacute;ria</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{% url 'opportunity_detail' %}" class="btn btn-secondary">Ver Detalhes</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

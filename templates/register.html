@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}M&atilde;os em A&ccedil;&atilde;o - Cadastro{% endblock %}
+
+{% block content %}
+<div class="auth-container" style="padding: 2rem;">
+    <div class="card auth-card" style="max-width: 560px;">
+        <div class="auth-header">
+            <div class="auth-logo">Cadastre-se</div>
+            <p>Crie sua conta no Cognito e conclua o perfil dentro da plataforma.</p>
+        </div>
+
+        <div class="grid grid-cols-2" style="gap: 1rem; margin-bottom: 1.5rem;">
+            <div class="card text-center">
+                <h3 class="card-title">Sou Volunt&aacute;rio</h3>
+                <p class="card-body">Acesse oportunidades, candidaturas e seu painel pessoal.</p>
+                <a href="{% url 'amazon_cognito_login' %}" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Continuar</a>
+            </div>
+
+            <div class="card text-center">
+                <h3 class="card-title">Sou ONG</h3>
+                <p class="card-body">Publique vagas, acompanhe candidaturas e gerencie sua organiza&ccedil;&atilde;o.</p>
+                <a href="{% url 'amazon_cognito_login' %}" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">Continuar</a>
+            </div>
+        </div>
+
+        <div style="text-align: center; font-size: 0.875rem;">
+            J&aacute; tem uma conta? <a href="{% url 'login_page' %}" class="text-primary">Fa&ccedil;a login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

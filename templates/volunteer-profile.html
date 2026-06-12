@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}M&atilde;os em A&ccedil;&atilde;o - Meu Perfil{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="nav-brand">M&atilde;os em A&ccedil;&atilde;o</div>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="{% url 'volunteer_dashboard' %}" class="sidebar-item">Dashboard</a>
+            <a href="{% url 'opportunities' %}" class="sidebar-item">Oportunidades</a>
+            <a href="{% url 'my_applications' %}" class="sidebar-item">Minhas Inscri&ccedil;&otilde;es</a>
+            <a href="{% url 'volunteer_profile' %}" class="sidebar-item">Meu Perfil</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="navbar">
+            <button class="mobile-menu-btn" type="button">&#9776;</button>
+            <div class="nav-menu">
+                <span class="nav-item">Ol&aacute;, {% if user.is_authenticated %}{{ user.username }}{% else %}Volunt&aacute;rio{% endif %}</span>
+                <a href="{% url 'account_logout' %}" class="nav-item text-danger">Sair</a>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>Meu Perfil</h1>
+            </div>
+
+            <div class="card" style="max-width: 600px;">
+                <form>
+                    <div class="form-group">
+                        <label class="form-label">Nome</label>
+                        <input type="text" class="form-control" value="{% if user.is_authenticated %}{{ user.username }}{% else %}Jo&atilde;o Volunt&aacute;rio{% endif %}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" value="{% if user.is_authenticated %}{{ user.email }}{% else %}joao@example.com{% endif %}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Habilidades</label>
+                        <textarea class="form-control">Desenvolvimento Web, Ensino, Organiza&ccedil;&atilde;o</textarea>
+                    </div>
+                    <button class="btn btn-primary" type="button">Salvar Altera&ccedil;&otilde;es</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}M&atilde;os em A&ccedil;&atilde;o - Detalhes da Oportunidade{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="nav-brand">M&atilde;os em A&ccedil;&atilde;o</div>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="{% url 'opportunities' %}" class="sidebar-item">Voltar</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="navbar">
+            <button class="mobile-menu-btn" type="button">&#9776;</button>
+            <div class="nav-menu">
+                <span class="nav-item">Ol&aacute;, {% if user.is_authenticated %}{{ user.username }}{% else %}Usu&aacute;rio{% endif %}</span>
+                <a href="{% url 'account_logout' %}" class="nav-item text-danger">Sair</a>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>Distribui&ccedil;&atilde;o de Alimentos</h1>
+                <div>
+                    <span class="badge badge-primary">Assist&ecirc;ncia Social</span>
+                    <span class="badge badge-success">Aberta</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3">
+                <div class="card" style="grid-column: span 2;">
+                    <h3>Descri&ccedil;&atilde;o Completa</h3>
+                    <p>Venha fazer parte do nosso mutir&atilde;o de entrega de cestas b&aacute;sicas para fam&iacute;lias em situa&ccedil;&atilde;o de vulnerabilidade.</p>
+                    <p>Ser&aacute; necess&aacute;rio disposi&ccedil;&atilde;o para ajudar a carregar e organizar os itens.</p>
+
+                    <h3 style="margin-top:2rem;">Requisitos</h3>
+                    <ul>
+                        <li>Ser maior de 18 anos</li>
+                        <li>Disponibilidade no fim de semana</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Resumo</h3>
+                    <ul style="line-height:2;">
+                        <li><strong>Data:</strong> 22/06/2026</li>
+                        <li><strong>Hora:</strong> 08:00 &agrave;s 12:00</li>
+                        <li><strong>Local:</strong> Centro Comunit&aacute;rio</li>
+                        <li><strong>Vagas Restantes:</strong> 5 de 10</li>
+                    </ul>
+                    <hr style="margin:1rem 0; border:none; border-top: 1px solid var(--border);">
+                    <h3>Organizador</h3>
+                    <p><strong>A&ccedil;&atilde;o Solid&aacute;ria</strong></p>
+                    <p style="font-size:0.875rem;">ONG verificada em 2020</p>
+
+                    <button class="btn btn-primary mt-4" type="button" style="width:100%; margin-top:1rem;" data-modal-target="confirmModal">Quero me Inscrever!</button>
+                </div>
+            </div>
+
+            <div class="modal-backdrop" id="confirmModal">
+                <div class="modal-content">
+                    <h3 style="margin-top:0;">Confirmar Inscri&ccedil;&atilde;o</h3>
+                    <p>Voc&ecirc; tem certeza que deseja se inscrever na oportunidade <strong>Distribui&ccedil;&atilde;o de Alimentos</strong>?</p>
+                    <p>A ONG A&ccedil;&atilde;o Solid&aacute;ria receber&aacute; seus dados de contato.</p>
+                    <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:2rem;">
+                        <button class="btn btn-secondary" type="button" data-modal-close>Cancelar</button>
+                        <button class="btn btn-primary" type="button" onclick="alert('Inscri&ccedil;&atilde;o realizada!'); document.getElementById('confirmModal').classList.remove('open');">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

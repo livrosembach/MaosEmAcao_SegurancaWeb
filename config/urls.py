@@ -16,10 +16,28 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import TemplateView
 from core import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('entrar/', TemplateView.as_view(template_name='login.html'), name='login_page'),
+    path('cadastrar/', TemplateView.as_view(template_name='register.html'), name='register_page'),
+    path('oportunidades/', TemplateView.as_view(template_name='opportunities.html'), name='opportunities'),
+    path('oportunidades/detalhes/', TemplateView.as_view(template_name='opportunity-details.html'), name='opportunity_detail'),
+    path('voluntario/painel/', TemplateView.as_view(template_name='volunteer-dashboard.html'), name='volunteer_dashboard'),
+    path('voluntario/candidaturas/', TemplateView.as_view(template_name='my-applications.html'), name='my_applications'),
+    path('voluntario/perfil/', TemplateView.as_view(template_name='volunteer-profile.html'), name='volunteer_profile'),
+    path('ong/painel/', TemplateView.as_view(template_name='ngo-dashboard.html'), name='ngo_dashboard'),
+    path('ong/oportunidades/', TemplateView.as_view(template_name='ngo-opportunities.html'), name='ngo_opportunities'),
+    path('ong/oportunidades/nova/', TemplateView.as_view(template_name='create-opportunity.html'), name='create_opportunity'),
+    path('ong/oportunidades/editar/', TemplateView.as_view(template_name='edit-opportunity.html'), name='edit_opportunity'),
+    path('ong/candidatos/', TemplateView.as_view(template_name='ngo-applicants.html'), name='ngo_applicants'),
+    path('ong/perfil/', TemplateView.as_view(template_name='ngo-profile.html'), name='ngo_profile'),
+    path('admin/painel/', TemplateView.as_view(template_name='admin-dashboard.html'), name='admin_dashboard'),
+    path('admin/usuarios/', TemplateView.as_view(template_name='admin-users.html'), name='admin_users'),
+    path('admin/ongs/', TemplateView.as_view(template_name='admin-ngos.html'), name='admin_ngos'),
+    path('admin/auditoria/', TemplateView.as_view(template_name='audit-logs.html'), name='audit_logs'),
     path('accounts/', include('allauth.urls')),
     path('admin/', admin.site.urls),
     

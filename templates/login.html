@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}M&atilde;os em A&ccedil;&atilde;o - Entrar{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="card auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">M&atilde;os em A&ccedil;&atilde;o</div>
+            <p>O acesso &eacute; feito pela autentica&ccedil;&atilde;o da AWS Cognito.</p>
+        </div>
+
+        <p style="margin-bottom: 1.5rem;">
+            Entre com sua conta para acessar os pain&eacute;is, candidaturas e ferramentas da plataforma.
+        </p>
+
+        <a href="{% url 'amazon_cognito_login' %}" class="btn btn-primary" style="width: 100%;">Entrar com Cognito</a>
+
+        <div style="text-align: center; margin-top: 1.5rem; font-size: 0.875rem;">
+            N&atilde;o tem uma conta? <a href="{% url 'register_page' %}" class="text-primary">Cadastre-se</a>
+        </div>
+
+        <div style="text-align: center; margin-top: 1rem; font-size: 0.75rem; color: var(--text-secondary);">
+            Ap&oacute;s autenticar, complete o perfil no primeiro acesso.
+        </div>
+    </div>
+</div>
+{% endblock %}

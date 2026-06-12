@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}M&atilde;os em A&ccedil;&atilde;o - In&iacute;cio{% endblock %}
+
+{% block content %}
+<header class="navbar">
+    <div class="nav-brand">M&atilde;os em A&ccedil;&atilde;o</div>
+    <div class="nav-menu">
+        <a href="{% url 'home' %}" class="nav-item">In&iacute;cio</a>
+        <a href="{% url 'opportunities' %}" class="nav-item">Oportunidades</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'account_logout' %}" class="btn btn-secondary">Sair</a>
+        {% else %}
+            <a href="{% url 'login_page' %}" class="btn btn-secondary">Entrar</a>
+            <a href="{% url 'register_page' %}" class="btn btn-primary">Cadastrar</a>
+        {% endif %}
+    </div>
+</header>
+
+<main>
+    <section class="hero-section">
+        <h1 class="hero-title">Conectando quem quer ajudar com quem precisa</h1>
+        <p class="hero-subtitle">M&atilde;os em A&ccedil;&atilde;o &eacute; a plataforma ideal para conectar volunt&aacute;rios a ONGs, promovendo o impacto social e a transpar&ecirc;ncia atrav&eacute;s do trabalho colaborativo.</p>
+        <div class="flex gap-4" style="display:flex; justify-content:center; gap: 1rem;">
+            <a href="{% url 'opportunities' %}" class="btn btn-primary">Ver Oportunidades</a>
+            <a href="{% url 'register_page' %}" class="btn btn-secondary">Ser Volunt&aacute;rio</a>
+        </div>
+    </section>
+
+    <section class="content-wrapper">
+        <h2 style="text-align:center; margin-bottom: 2rem;">Como Funciona</h2>
+        <div class="grid grid-cols-3">
+            <div class="card text-center" style="text-align:center;">
+                <div style="font-size:3rem; color:var(--primary); margin-bottom:1rem;">1</div>
+                <h3 class="card-title">Cadastre-se</h3>
+                <p class="card-body">Crie seu perfil como volunt&aacute;rio ou ONG em nossa plataforma segura.</p>
+            </div>
+            <div class="card text-center" style="text-align:center;">
+                <div style="font-size:3rem; color:var(--primary); margin-bottom:1rem;">2</div>
+                <h3 class="card-title">Encontre</h3>
+                <p class="card-body">Busque por oportunidades que d&atilde;o match com suas habilidades.</p>
+            </div>
+            <div class="card text-center" style="text-align:center;">
+                <div style="font-size:3rem; color:var(--primary); margin-bottom:1rem;">3</div>
+                <h3 class="card-title">Aja</h3>
+                <p class="card-body">Participe das a&ccedil;&otilde;es e fa&ccedil;a a diferen&ccedil;a na comunidade.</p>
+            </div>
+        </div>
+
+        <h2 style="text-align:center; margin: 4rem 0 2rem;">Oportunidades Recentes</h2>
+        <div class="grid grid-cols-3">
+            <div class="card">
+                <h3 class="card-title">Distribui&ccedil;&atilde;o de Alimentos</h3>
+                <p class="card-body">Ajudar na organiza&ccedil;&atilde;o e entrega de cestas b&aacute;sicas.</p>
+                <div class="flex" style="display:flex; justify-content:space-between; margin-top:1rem;">
+                    <span class="badge badge-primary">Assist&ecirc;ncia Social</span>
+                    <span>10 Vagas</span>
+                </div>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Aulas de Refor&ccedil;o Escolar</h3>
+                <p class="card-body">Aulas de matem&aacute;tica para crian&ccedil;as da comunidade.</p>
+                <div class="flex" style="display:flex; justify-content:space-between; margin-top:1rem;">
+                    <span class="badge badge-warning">Educa&ccedil;&atilde;o</span>
+                    <span>3 Vagas</span>
+                </div>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Mutir&atilde;o de Limpeza</h3>
+                <p class="card-body">Limpeza da pra&ccedil;a principal do bairro.</p>
+                <div class="flex" style="display:flex; justify-content:space-between; margin-top:1rem;">
+                    <span class="badge badge-success">Meio Ambiente</span>
+                    <span>20 Vagas</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer style="text-align:center; padding: 2rem; border-top: 1px solid var(--border); margin-top: 4rem;">
+        <p>&copy; 2026 M&atilde;os em A&ccedil;&atilde;o. Cuidando da seguran&ccedil;a e do social.</p>
+    </footer>
+</main>
+{% endblock %}

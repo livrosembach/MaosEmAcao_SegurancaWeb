@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}M&atilde;os em A&ccedil;&atilde;o - Editar Oportunidade{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="nav-brand">M&atilde;os em A&ccedil;&atilde;o</div>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="{% url 'ngo_dashboard' %}" class="sidebar-item">Dashboard</a>
+            <a href="{% url 'ngo_opportunities' %}" class="sidebar-item">Gerenciar Oportunidades</a>
+            <a href="{% url 'ngo_applicants' %}" class="sidebar-item">Inscritos</a>
+            <a href="{% url 'ngo_profile' %}" class="sidebar-item">Perfil da ONG</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="navbar">
+            <button class="mobile-menu-btn" type="button">&#9776;</button>
+            <div class="nav-menu">
+                <span class="nav-item">Ol&aacute;, {% if user.is_authenticated %}{{ user.username }}{% else %}ONG Esperan&ccedil;a{% endif %}</span>
+                <a href="{% url 'account_logout' %}" class="nav-item text-danger">Sair</a>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>Editar Oportunidade</h1>
+                <a href="{% url 'ngo_opportunities' %}" class="btn btn-secondary">Voltar</a>
+            </div>
+
+            <div class="card">
+                <form>
+                    <div class="form-group">
+                        <label class="form-label">T&iacute;tulo</label>
+                        <input type="text" class="form-control" value="Coleta de Brinquedos">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descri&ccedil;&atilde;o</label>
+                        <textarea class="form-control" rows="5">Campanha de arrecada&ccedil;&atilde;o de brinquedos para doa&ccedil;&atilde;o.</textarea>
+                    </div>
+                    <div class="grid grid-cols-2">
+                        <div class="form-group">
+                            <label class="form-label">Data</label>
+                            <input type="date" class="form-control" value="2026-06-30">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Quantidade de Vagas</label>
+                            <input type="number" class="form-control" value="15" min="1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Local</label>
+                        <input type="text" class="form-control" value="Sede da ONG">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Categoria</label>
+                        <select class="form-control">
+                            <option selected>Doa&ccedil;&atilde;o</option>
+                            <option>Educa&ccedil;&atilde;o</option>
+                            <option>Sa&uacute;de</option>
+                            <option>Assist&ecirc;ncia Social</option>
+                            <option>Meio Ambiente</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary">Salvar Alterações</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

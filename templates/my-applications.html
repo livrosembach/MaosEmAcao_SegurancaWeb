@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}M&atilde;os em A&ccedil;&atilde;o - Minhas Inscri&ccedil;&otilde;es{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="nav-brand">M&atilde;os em A&ccedil;&atilde;o</div>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="{% url 'volunteer_dashboard' %}" class="sidebar-item">Dashboard</a>
+            <a href="{% url 'opportunities' %}" class="sidebar-item">Oportunidades</a>
+            <a href="{% url 'my_applications' %}" class="sidebar-item">Minhas Inscri&ccedil;&otilde;es</a>
+            <a href="{% url 'volunteer_profile' %}" class="sidebar-item">Meu Perfil</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="navbar">
+            <button class="mobile-menu-btn" type="button">&#9776;</button>
+            <div class="nav-menu">
+                <span class="nav-item">Ol&aacute;, {% if user.is_authenticated %}{{ user.username }}{% else %}Volunt&aacute;rio{% endif %}</span>
+                <a href="{% url 'account_logout' %}" class="nav-item text-danger">Sair</a>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>Minhas Inscri&ccedil;&otilde;es</h1>
+                <a href="{% url 'opportunities' %}" class="btn btn-primary">Procurar Vagas</a>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Oportunidade</th>
+                            <th>ONG</th>
+                            <th>Data do Evento</th>
+                            <th>Status da Inscri&ccedil;&atilde;o</th>
+                            <th>A&ccedil;&otilde;es</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Triagem de Roupas</td>
+                            <td>A&ccedil;&atilde;o Solid&aacute;ria</td>
+                            <td>20/06/2026</td>
+                            <td><span class="badge badge-success">Aprovado</span></td>
+                            <td><button class="btn btn-secondary" type="button" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">Detalhes</button></td>
+                        </tr>
+                        <tr>
+                            <td>Refor&ccedil;o de Matem&aacute;tica</td>
+                            <td>Educar Brasil</td>
+                            <td>25/06/2026</td>
+                            <td><span class="badge badge-warning">Em An&aacute;lise</span></td>
+                            <td><button class="btn btn-danger" type="button" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">Cancelar</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

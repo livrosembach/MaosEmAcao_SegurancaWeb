@@ -7,11 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Mock authentication
             const email = document.getElementById('email').value;
             if (email.includes('admin')) {
-                window.location.href = 'admin-dashboard.html';
+                window.location.href = '/admin/painel/';
             } else if (email.includes('ong')) {
-                window.location.href = 'ngo-dashboard.html';
+                window.location.href = '/ong/painel/';
             } else {
-                window.location.href = 'volunteer-dashboard.html';
+                window.location.href = '/voluntario/painel/';
             }
         });
     }
